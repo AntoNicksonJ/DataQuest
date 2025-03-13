@@ -9,7 +9,6 @@ import Q21 from "./components/Q21";
 import Q22 from "./components/Q22";
 import Q23 from "./components/Q23";
 import Q31 from "./components/Q31";
-import Q32 from "./components/Q32";
 import Login from "./components/Login";
 
 function App() {
@@ -25,7 +24,6 @@ function App() {
       <Route path="/q22" element={<Q22 />} />
       <Route path="/q23" element={<Q23 />} />
       <Route path="/q31" element={<Q31 />} />
-      <Route path="/q32" element={<Q32 />} />
       <Route path="/admin" element={<Admin />} />
     </Routes>
   );

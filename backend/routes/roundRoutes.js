@@ -58,7 +58,7 @@ router.post("/end-round", async (req, res) => {
         roundStatus.active_round = null;
         await roundStatus.save();
 
-        res.json({ success: true, message: `Round ${roundStatus.active_round} manually ended.` });
+        res.json({ success: true, message: `Round manually ended.` });
     } catch (err) {
         res.status(500).json({ success: false, message: "Error ending round" });
     }
@@ -73,11 +73,30 @@ const checkAndEndRound = async () => {
     if (currentTime >= roundStatus.ended_at) {
         roundStatus.active_round = null;
         await roundStatus.save();
-        console.log(`Round ${roundStatus.active_round} automatically ended at ${currentTime}`);
+        console.log(`Round automatically ended at ${currentTime}`);
     }
 };
 
 // Run auto-end check every minute
 setInterval(checkAndEndRound, 60000);
+
+// 📌 4️⃣ Fetch Current Active Round
+router.get("/round-status", async (req, res) => {
+    try {
+        const roundStatus = await RoundStatus.findOne({});
+        
+        if (!roundStatus || !roundStatus.active_round) {
+            return res.json({ active_round: null, started_at: null, ended_at: null });
+        }
+
+        res.json({
+            active_round: roundStatus.active_round,
+            started_at: roundStatus.started_at,
+            ended_at: roundStatus.ended_at,
+        });
+    } catch (err) {
+        res.status(500).json({ success: false, message: "Error fetching round status" });
+    }
+});
 
 module.exports = router;

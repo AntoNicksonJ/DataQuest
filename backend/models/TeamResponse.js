@@ -12,4 +12,9 @@ const TeamResponseSchema = new mongoose.Schema({
     ]
 });
 
-module.exports = mongoose.model("TeamResponse", TeamResponseSchema);
+const TeamResponse = mongoose.models.TeamResponse || mongoose.model("TeamResponse", TeamResponseSchema);
+
+module.exports = TeamResponse;
+
+
+

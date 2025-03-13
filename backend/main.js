@@ -8,6 +8,7 @@ const MongoStore = require("connect-mongo"); // ✅ Import MongoStore
 const userRoutes = require("./routes/userRoutes");
 const quizRoutes = require("./routes/quizRoutes");
 const roundRoutes = require("./routes/roundRoutes");
+const LeaderboardRoutes = require("./routes/leaderboard"); // ✅ Import LeaderboardRoutes
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -51,6 +52,9 @@ app.use(session({
 app.use("/users", userRoutes);
 app.use("/quiz", quizRoutes);
 app.use("/rounds", roundRoutes);
+app.use("/leaderboard", LeaderboardRoutes); // ✅ Leaderboard Route
+app.use("/progress", require("./routes/progress-tracker")); // ✅ Progress Route
+
 
 // ✅ Root Route
 app.get("/", (req, res) => {

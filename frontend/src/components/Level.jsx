@@ -6,10 +6,17 @@ import Navbar from "../components/Navbar"; // ✅ Import Navbar
 
 function Level() {
   const [teamName, setTeamName] = useState(null);
+  const [activeRound, setActiveRound] = useState(null); // 🔥 Store active round
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchTeamName();
+
+    // 🔄 Fetch active round initially & every 5 seconds
+    const interval = setInterval(fetchActiveRound, 5000);
+    fetchActiveRound(); // Fetch immediately on mount
+
+    return () => clearInterval(interval); // ✅ Cleanup on unmount
   }, []);
 
   const fetchTeamName = async () => {
@@ -26,6 +33,16 @@ function Level() {
     }
   };
 
+  const fetchActiveRound = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/rounds/round-status");
+      setActiveRound(response.data.active_round); // 🔥 Set active round
+    } catch (error) {
+      console.error("Error fetching active round:", error);
+      setActiveRound(null);
+    }
+  };
+
   return (
     <div className="level">
       <Navbar /> {/* ✅ Navbar added here */}
@@ -33,25 +50,16 @@ function Level() {
         <span id="blue">Data</span> <span id="red">Quest</span>
       </h1>
       <div id="flex">
-        <div className="rounds">
-          Round 1
-          <Link to="/q11">
-            <button className="start"> Start </button>
-          </Link>
-        </div>
-        <div className="rounds">
-          Round 2
-          <Link to="/q21">
-            {" "}
-            <button className="start"> Start </button>
-          </Link>
-        </div>
-        <div className="rounds">
-          Round 3
-          <Link to="/q31">
-            <button className="start"> Start </button>
-          </Link>
-        </div>
+        {[1, 2, 3].map((round) => (
+          <div className="rounds" key={round}>
+            Round {round}
+            <Link to={activeRound === round ? `/q${round}1` : "#"}>
+              <button className="start" disabled={activeRound !== round}>
+                {activeRound === round ? "Start" : "Locked"}
+              </button>
+            </Link>
+          </div>
+        ))}
       </div>
     </div>
   );
