@@ -21,19 +21,20 @@ function Home() {
         }
     
         try {
-            const response = await axios.post("http://localhost:5000/users/register", {
+            const response = await axios.post("http://192.168.23.5:5000/users/register", {
                 teamname,
                 email,
                 password,
             });
     
             console.log("✅ Registration Successful:", response.data);
-            navigate("/level");
+            navigate("/login"); // Navigate to login page after successful registration
         } catch (err) {
             console.error("❌ Registration Error:", err.response?.data?.error || err.message);
             setError(err.response?.data?.error || "Something went wrong");
         }
     };
+    
 
     return (
         <div className="home">
@@ -93,10 +94,13 @@ function Home() {
                                 required
                             />
                         </fieldset>
-
+                        <div id="register" style={{ display: "flex", flexDirection: "row", gap: "1rem" }}>
                         <button type="submit" id="submit" onClick={handleSubmit}>
-                            Submit
+                            Register
                         </button>
+                        <Link to="/login" style={{ color: "white"} }>Login Page </Link>
+                        </div>
+
                     </div>
                 </div>
             </div>

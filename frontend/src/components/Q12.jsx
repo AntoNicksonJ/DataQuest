@@ -3,6 +3,7 @@ import Navbar from "./Navbar";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import bg from "../assets/captain.jpg";
 
 const Q12 = () => {
     const [answer, setAnswer] = useState("");
@@ -15,22 +16,58 @@ const Q12 = () => {
     useEffect(() => {
         const fetchTeamName = async () => {
             try {
-                const response = await axios.get("http://localhost:5000/users/session");
+                const response = await axios.get("http://192.168.23.5:5000/users/session");
                 setTeamName(response.data.teamname);
             } catch (err) {
                 console.error("Error fetching team name:", err);
                 setError("Could not fetch team name. Try refreshing.");
             }
         };
-
         fetchTeamName();
     }, []);
 
-    // Helper function to get current time (HH:mm:ss)
-    const getCurrentTime = () => {
-        const now = new Date();
-        return now.toLocaleTimeString("en-GB", { hour12: false }); // 24-hour format
-    };
+    // Check if round is still active (Polling every 5 seconds)
+    useEffect(() => {
+        if (!teamName) return;
+
+        let isMounted = true; // Track component mount state
+
+        const validateAccess = async () => {
+            try {
+                // Fetch round status
+                const roundResponse = await axios.get("http://192.168.23.5:5000/rounds/round-status");
+                const { active_round } = roundResponse.data;
+
+                if (!active_round && isMounted) {
+                    console.log("Round inactive. Redirecting...");
+                    navigate("/level", { replace: true });
+                    return;
+                }
+
+                // Fetch team responses
+                const response = await fetch("http://192.168.23.5:5000/rounds/team-response", {
+                    credentials: "include",
+                });
+                const data = await response.json();
+
+                if (!data.teamReponses?.responses[0] && isMounted) {
+                    console.log("Q11 not completed. Redirecting...");
+                    navigate("/q11", { replace: true });
+                }
+            } catch (error) {
+                console.error("Error validating access:", error);
+            }
+        };
+
+        // Run validation immediately and then every 5 seconds
+        validateAccess();
+        const intervalId = setInterval(validateAccess, 5000);
+
+        return () => {
+            clearInterval(intervalId); // Cleanup interval on unmount
+            isMounted = false;
+        };
+    }, [teamName, navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -50,17 +87,12 @@ const Q12 = () => {
         }
 
         try {
-            const submissionTime = getCurrentTime();
-            console.log("Submitting:", { team_name: teamName, question_id: "q12", submission_time: submissionTime, answer });
-
-            const response = await axios.post("http://localhost:5000/quiz/submit-answer", {
+            const response = await axios.post("http://192.168.23.5:5000/quiz/submit-answer", {
                 team_name: teamName,
                 question_id: "q12",
-                submission_time: submissionTime,
-                answer, // Sending the user's answer
+                submission_time: new Date().toISOString(),
+                answer,
             });
-
-            console.log("Response:", response.data);
 
             if (response.data.success) {
                 navigate("/q13");
@@ -69,19 +101,14 @@ const Q12 = () => {
             }
         } catch (err) {
             console.error("Error submitting answer:", err);
-            if (err.response) {
-                console.error("Server response:", err.response.data);
-                setError(`Error: ${err.response.data.message}`);
-            } else {
-                setError("Something went wrong. Please try again.");
-            }
+            setError("Something went wrong. Please try again.");
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="q">
+        <div className="q" style={{ backgroundImage: `url(${bg})` }}>
             <Navbar />
             <div id="grid">
                 <div id="flex">
@@ -89,8 +116,8 @@ const Q12 = () => {
                     <div id="question">
                         <h2>Problem 2</h2>
                         <p>
-                            Great work buddies! Let's move to help others. Our Green monster (Hulk) and Thor 
-                            are in the middle of an enemy army, approaching them from both sides. 
+                            Great work buddies! Let's move to help others. Our Green monster (Hulk) and Thor
+                            are in the middle of an enemy army, approaching them from both sides.
                             Hulk decided to attack the side with maximum power. Which side should he attack?
                         </p>
                         <h3>Data: <a href="#">click here</a></h3>

@@ -7,6 +7,13 @@
     aspect-ratio: None;
     height: 100vh;
 }
+
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+  }
 .home .navbar img {
     height: 50px;
 }
@@ -37,14 +44,14 @@
 }
 
 .home #title{
-    font-size: 60px;
+    font-size: 50px;
     font-family: "Rubik Burned", system-ui;
     font-weight: 400;
     font-style: normal;
 }
 
 .home #subTitle{
-    font-size: 40px;
+    font-size: 35px;
     font-family: "Ubuntu Mono", monospace;
     font-weight: 400;
     font-style: normal;
@@ -71,6 +78,7 @@
     flex-direction: column;
     align-items: center;
     gap: 2vh;
+
 }
 
 .home .label{
@@ -100,6 +108,7 @@
     font-family: "Ubuntu Mono", monospace;
     font-weight: 400;
     font-style: normal;
+    margin-top: 0px;
 }
 
 .home #submit{

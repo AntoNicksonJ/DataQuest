@@ -21,7 +21,7 @@ function Level() {
 
   const fetchTeamName = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/users/session", {
+      const response = await axios.get("http://192.168.23.5:5000/users/session", {
         withCredentials: true,
       });
       console.log("Session Active:", response.data);
@@ -35,7 +35,7 @@ function Level() {
 
   const fetchActiveRound = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/rounds/round-status");
+      const response = await axios.get("http://192.168.23.5:5000/rounds/round-status");
       setActiveRound(response.data.active_round); // 🔥 Set active round
     } catch (error) {
       console.error("Error fetching active round:", error);
@@ -47,7 +47,7 @@ function Level() {
     <div className="level">
       <Navbar /> {/* ✅ Navbar added here */}
       <h1 id="title">
-        <span id="blue">Data</span> <span id="red">Quest</span>
+        <span id="white">Data Quest</span>
       </h1>
       <div id="flex">
         {[1, 2, 3].map((round) => (

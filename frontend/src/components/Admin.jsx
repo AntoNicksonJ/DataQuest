@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import "../assets/style/admin.css";
 
-const API_BASE_URL = "http://localhost:5000"; // Adjust according to your backend
+const API_BASE_URL = "http://192.168.23.5:5000"; // Adjust according to your backend
 
 const AdminDashboard = () => {
   const [teams, setTeams] = useState([]);
@@ -15,6 +15,7 @@ const AdminDashboard = () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/users/users`);
       setTeams(response.data);
+      console.log(response.data);
     } catch (error) {
       console.error("Error fetching teams:", error);
     }
@@ -106,13 +107,21 @@ const AdminDashboard = () => {
   };
 
   useEffect(() => {
-    fetchTeams();
-    fetchRoundStatus();
-    if (activeRound) {
-      fetchProgress(activeRound);
-      fetchLeaderboard(activeRound);
-    }
+    const fetchData = () => {
+      fetchTeams();
+      fetchRoundStatus();
+      if (activeRound) {
+        fetchProgress(activeRound);
+        fetchLeaderboard(activeRound);
+      }
+    };
+    fetchData(); // Initial fetch
+    const interval = setInterval(fetchData, 10000); // Refresh every 30 seconds
+  
+    return () => clearInterval(interval); // Cleanup on unmount
   }, [activeRound]);
+  
+  
 
   return (
     <div className="admin">
@@ -127,6 +136,7 @@ const AdminDashboard = () => {
               <th>ID</th>
               <th>Team Name</th>
               <th>Email</th>
+              <th>Password</th>
             </tr>
           </thead>
           <tbody>
@@ -135,6 +145,7 @@ const AdminDashboard = () => {
                 <td>{team._id}</td>
                 <td>{team.teamname}</td>
                 <td>{team.email}</td>
+                <td>{team.password}</td>
               </tr>
             ))}
           </tbody>

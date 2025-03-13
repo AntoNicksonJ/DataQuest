@@ -1,10 +1,10 @@
-import "../assets/style/q.css";
-import Navbar from "./Navbar";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css"; // Import styles
+import Navbar from "./Navbar";
+import bg from "../assets/spider.png";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"; // Import Toastify CSS
 
 const Q13 = () => {
     const [answer, setAnswer] = useState("");
@@ -13,80 +13,113 @@ const Q13 = () => {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
+    // Fetch team name on component mount
     useEffect(() => {
         const fetchTeamName = async () => {
             try {
-                const response = await axios.get("http://localhost:5000/users/session");
+                const response = await axios.get("http://192.168.23.5:5000/users/session");
                 setTeamName(response.data.teamname);
             } catch (err) {
                 console.error("Error fetching team name:", err);
-                setError("Could not fetch team name. Try refreshing.");
+                toast.error("Could not fetch team name. Try refreshing.");
             }
         };
 
         fetchTeamName();
     }, []);
 
-    const getCurrentTime = () => {
-        const now = new Date();
-        return now.toLocaleTimeString("en-GB", { hour12: false });
-    };
+    // Check if round is still active and poll every 5 seconds
+     // Check if round is still active (Polling every 5 seconds)
+     useEffect(() => {
+        if (!teamName) return;
 
+        let isMounted = true; // Track component mount state
+
+        const validateAccess = async () => {
+            try {
+                // Fetch round status
+                const roundResponse = await axios.get("http://192.168.23.5:5000/rounds/round-status");
+                const { active_round } = roundResponse.data;
+
+                if (!active_round && isMounted) {
+                    console.log("Round inactive. Redirecting...");
+                    navigate("/level", { replace: true });
+                    return;
+                }
+
+                // Fetch team responses
+                const response = await fetch("http://192.168.23.5:5000/rounds/team-response", {
+                    credentials: "include",
+                });
+                const data = await response.json();
+
+                if (!data.teamReponses?.responses[0] && isMounted) {
+                    console.log("Q11 not completed. Redirecting...");
+                    navigate("/q11", { replace: true });
+                }
+            } catch (error) {
+                console.error("Error validating access:", error);
+            }
+        };
+
+        // Run validation immediately and then every 5 seconds
+        validateAccess();
+        const intervalId = setInterval(validateAccess, 5000);
+
+        return () => {
+            clearInterval(intervalId); // Cleanup interval on unmount
+            isMounted = false;
+        };
+    }, [teamName, navigate]);
+
+    
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError("");
 
         if (!teamName) {
-            setError("Team name is missing. Please try logging in again.");
+            toast.error("Team name is missing. Please try logging in again.");
             setLoading(false);
             return;
         }
 
         if (!answer.trim()) {
-            setError("Please enter an answer.");
+            toast.error("Please enter an answer.");
             setLoading(false);
             return;
         }
 
         try {
-            const submissionTime = getCurrentTime();
-            console.log("Submitting:", { team_name: teamName, question_id: "q13", submission_time: submissionTime, answer });
+            console.log("Submitting:", { team_name: teamName, question_id: "q13", submission_time: new Date().toISOString(), answer });
 
-            const response = await axios.post("http://localhost:5000/quiz/submit-answer", {
+            const response = await axios.post("http://192.168.23.5:5000/quiz/submit-answer", {
                 team_name: teamName,
                 question_id: "q13",
-                submission_time: submissionTime,
+                submission_time: new Date().toISOString(),
                 answer,
             });
 
             console.log("Response:", response.data);
 
             if (response.data.success) {
-                toast.success("Round completed! 🎉", { autoClose: 5000 }); // Show success message
-                setTimeout(() => {
-                    navigate("/level"); // Redirect after 2 seconds
-                }, 5000);
+                toast.success("Successfully submitted! Redirecting...");
+                setTimeout(() => navigate("/level", { replace: true }), 2000); // Redirect after 2 seconds
             } else {
-                setError("Wrong answer! Try again.");
+                toast.error("Wrong answer! Try again.");
             }
         } catch (err) {
             console.error("Error submitting answer:", err);
-            if (err.response) {
-                console.error("Server response:", err.response.data);
-                setError(`Error: ${err.response.data.message}`);
-            } else {
-                setError("Something went wrong. Please try again.");
-            }
+            toast.error("Something went wrong. Please try again.");
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="q">
+        <div className="q" style={{ backgroundImage: `url(${bg})` }}>
             <Navbar />
-            <ToastContainer /> {/* Required for notifications */}
+            <ToastContainer position="top-right" autoClose={3000} />
             <div id="grid">
                 <div id="flex">
                     <h1 id="title">ROUND 1</h1>
@@ -114,7 +147,6 @@ const Q13 = () => {
                             {loading ? "Checking..." : "Submit"}
                         </button>
                     </form>
-                    {error && <p style={{ color: "red" }}>{error}</p>}
                 </div>
             </div>
         </div>

@@ -16,15 +16,23 @@ function Login() {
 
         try {
             const response = await axios.post(
-                "http://localhost:5000/users/login",
-                { teamname, password },
+                "http://192.168.23.5:5000/users/login",
+                { teamname, password
+                 },
                 { withCredentials: true } // ✅ Allows session cookies
             );
 
-            console.log("Login Successful:", response.data);
-            navigate("/level"); // Redirect to level page upon success
+            console.log("✅ Login Successful:", response.data);
+
+            const userRole = response.data.role; // Assuming backend sends role in response
+
+            if (userRole === "admin") {
+                navigate("/admin"); // Redirect to admin panel
+            } else {
+                navigate("/level"); // Redirect to user level page
+            }
         } catch (err) {
-            console.error("Login Error:", err.response?.data?.error || err.message);
+            console.error("❌ Login Error:", err.response?.data?.error || err.message);
             setError(err.response?.data?.error || "Something went wrong");
         }
     };

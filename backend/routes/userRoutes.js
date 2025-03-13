@@ -7,7 +7,7 @@ const router = express.Router();
 
 // Register Route
 router.post("/register", async (req, res) => {
-  const { teamname, email, password } = req.body;
+  const { teamname, email, password, role = "user" } = req.body; // Default role is "user"
 
   try {
     const existingUser = await User.findOne({ teamname });
@@ -15,10 +15,10 @@ router.post("/register", async (req, res) => {
       return res.status(400).json({ error: "Team name already exists" });
     }
 
-    const user = new User({ teamname, email, password });
+    const user = new User({ teamname, email, password, role }); // Include role
     await user.save();
 
-    res.json({ message: "User registered successfully" });
+    res.json({ message: "User registered successfully", user });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -36,9 +36,10 @@ router.post("/login", async (req, res) => {
     }
 
     req.session.teamname = user.teamname;
-    console.log(`Session created: ${req.sessionID} for team ${req.session.teamname}`);
+    req.session.role = user.role; // Store role in session
+    console.log(`Session created: ${req.sessionID} for team ${req.session.teamname} (Role: ${req.session.role})`);
 
-    res.json({ message: "Login successful", sessionID: req.sessionID, teamname: user.teamname });
+    res.json({ message: "Login successful", sessionID: req.sessionID, teamname: user.teamname, role: user.role });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -46,7 +47,7 @@ router.post("/login", async (req, res) => {
 
 // Logout Route
 router.post("/logout", (req, res) => {
-  console.log('Logging out...');
+  console.log("Logging out...");
   if (!req.session) {
     return res.status(400).json({ success: false, error: "No active session" });
   }
@@ -60,7 +61,7 @@ router.post("/logout", (req, res) => {
       path: "/",
       httpOnly: true,
       sameSite: "lax",
-      secure: false
+      secure: false,
     });
 
     console.log("✅ Session destroyed and cookie cleared");
@@ -71,15 +72,16 @@ router.post("/logout", (req, res) => {
 // Get Active Session
 router.get("/session", (req, res) => {
   if (req.session.teamname) {
-    res.json({ message: "Session active", teamname: req.session.teamname });
+    res.json({ message: "Session active", teamname: req.session.teamname, role: req.session.role });
   } else {
     res.status(401).json({ error: "No active session" });
   }
 });
 
+// Get All Users
 router.get("/users", async (req, res) => {
   try {
-    const users = await User.find({}, "teamname email password"); // Fetch only required fields
+    const users = await User.find({}, "teamname email password role"); // Fetch only required fields
     res.json(users);
   } catch (err) {
     res.status(500).json({ error: "Error fetching users" });

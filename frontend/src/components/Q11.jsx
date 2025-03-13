@@ -15,7 +15,7 @@ const Q11 = () => {
     useEffect(() => {
         const fetchTeamName = async () => {
             try {
-                const response = await axios.get("http://localhost:5000/users/session");
+                const response = await axios.get("http://192.168.23.5:5000/users/session");
                 setTeamName(response.data.teamname);
             } catch (err) {
                 console.error("Error fetching team name:", err);
@@ -26,11 +26,26 @@ const Q11 = () => {
         fetchTeamName();
     }, []);
 
-    // Helper function to get current time (HH:mm:ss)
-    const getCurrentTime = () => {
-        const now = new Date();
-        return now.toLocaleTimeString("en-GB", { hour12: false }); // 24-hour format
-    };
+    // Check if round is still active
+    useEffect(() => {
+        const checkRoundStatus = async () => {
+            try {
+                const response = await axios.get("http://192.168.23.5:5000/rounds/round-status");
+                const { active_round } = response.data;
+
+                if (!active_round || active_round !== 1) {
+                    navigate("/level"); // Redirect if round has ended
+                }
+            } catch (error) {
+                console.error("Error fetching round status:", error);
+            }
+        };
+
+        checkRoundStatus();
+        const interval = setInterval(checkRoundStatus, 5000); // Poll every 5 seconds
+
+        return () => clearInterval(interval); // Cleanup interval on unmount
+    }, [navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -50,31 +65,21 @@ const Q11 = () => {
         }
 
         try {
-            const submissionTime = getCurrentTime();
-            console.log("Submitting:", { team_name: teamName, question_id: "q11", submission_time: submissionTime, answer });
-
-            const response = await axios.post("http://localhost:5000/quiz/submit-answer", {
+            const response = await axios.post("http://192.168.23.5:5000/quiz/submit-answer", {
                 team_name: teamName,
                 question_id: "q11",
-                submission_time: submissionTime,
-                answer, // Sending the user's answer
+                submission_time: new Date().toISOString(),
+                answer,
             });
 
-            console.log("Response:", response.data);
-
             if (response.data.success) {
-                navigate("/q12");
+                setTimeout(() => navigate("/q12"), 1000);
             } else {
                 setError("Wrong answer! Try again.");
             }
         } catch (err) {
             console.error("Error submitting answer:", err);
-            if (err.response) {
-                console.error("Server response:", err.response.data);
-                setError(`Error: ${err.response.data.message}`);
-            } else {
-                setError("Something went wrong. Please try again.");
-            }
+            setError("Something went wrong. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -109,6 +114,6 @@ const Q11 = () => {
             </div>
         </div>
     );
-};
+};  
 
 export default Q11;

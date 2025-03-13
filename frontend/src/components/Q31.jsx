@@ -3,6 +3,7 @@ import Navbar from "./Navbar";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import bg from '../assets/thanos.jpg'
 
 const Q31 = () => {
     const [answer, setAnswer] = useState("");
@@ -15,7 +16,7 @@ const Q31 = () => {
     useEffect(() => {
         const fetchTeamName = async () => {
             try {
-                const response = await axios.get("http://localhost:5000/users/session");
+                const response = await axios.get("http://192.168.23.5:5000/users/session");
                 setTeamName(response.data.teamname);
             } catch (err) {
                 console.error("Error fetching team name:", err);
@@ -25,6 +26,26 @@ const Q31 = () => {
 
         fetchTeamName();
     }, []);
+
+    useEffect(() => {
+        const checkRoundStatus = async () => {
+            try {
+                const response = await axios.get("http://192.168.23.5:5000/rounds/round-status");
+                const { active_round } = response.data;
+
+                if (!active_round || active_round !== 3) {
+                    navigate("/level"); // Redirect if round has ended
+                }
+            } catch (error) {
+                console.error("Error fetching round status:", error);
+            }
+        };
+
+        checkRoundStatus();
+        const interval = setInterval(checkRoundStatus, 5000); // Poll every 5 seconds
+
+        return () => clearInterval(interval); // Cleanup interval on unmount
+    }, [navigate]);
 
     // Helper function to get current time (HH:mm:ss)
     const getCurrentTime = () => {
@@ -53,7 +74,7 @@ const Q31 = () => {
             const submissionTime = getCurrentTime();
             console.log("Submitting:", { team_name: teamName, question_id: "q31", submission_time: submissionTime, answer });
 
-            const response = await axios.post("http://localhost:5000/quiz/submit-answer", {
+            const response = await axios.post("http://192.168.23.5:5000/quiz/submit-answer", {
                 team_name: teamName,
                 question_id: "q31",
                 submission_time: submissionTime,
@@ -81,7 +102,7 @@ const Q31 = () => {
     };
 
     return (
-        <div className="q">
+        <div className="q" style={{ backgroundImage: `url(${bg})` }}>
             <Navbar />
             <div id="grid">
                 <div id="flex">

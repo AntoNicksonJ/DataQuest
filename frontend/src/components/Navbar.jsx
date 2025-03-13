@@ -16,7 +16,7 @@ function Navbar() {
 
   const fetchTeamName = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/users/session", {
+      const response = await axios.get("http://192.168.23.5:5000/users/session", {
         withCredentials: true,
       }); // ✅ Axios GET request
       console.log("Session Active 123:", response.data);
@@ -38,7 +38,7 @@ function Navbar() {
     try {
       console.log("🔄 Sending logout request..."); // Before request
 
-      const response = await axios.post("http://localhost:5000/users/logout"); // Axios POST request
+      const response = await axios.post("http://192.168.23.5:5000/users/logout"); // Axios POST request
 
       console.log("🔄 Logout response received:", response); // After request
 
@@ -64,13 +64,13 @@ function Navbar() {
         <img src={yukta} alt="Logo" />
         <div id="TeamLogout">
           <h4 id="TeamName">{teamName}</h4>
-          <button onClick={handleLogout} id="Logout">
+          <div onClick={handleLogout} id="Logout" style={{ cursor: "pointer" }}>
             <h4>Log out</h4>
-          </button>
+          </div>
         </div>
       </nav>
     </div>
   );
 }
 
-export default Navbar;
+export default Navbar; 
