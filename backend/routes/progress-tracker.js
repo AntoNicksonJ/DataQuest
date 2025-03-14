@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../models/users"); // Users collection
-const TeamResponse = require("../models/teamResponse"); // Team responses collection
+const TeamResponse = require("../models/TeamResponse"); // Team responses collection
 
 // 📌 Round-wise Progress Tracking API
 router.get("/progress-tracking/:roundNumber", async (req, res) => {
