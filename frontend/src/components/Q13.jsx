@@ -42,7 +42,7 @@ const Q13 = () => {
                 const { active_round } = roundResponse.data;
 
                 if (!active_round && isMounted) {
-                    console.log("Round inactive. Redirecting...");
+
                     navigate("/level", { replace: true });
                     return;
                 }
@@ -54,7 +54,7 @@ const Q13 = () => {
                 const data = await response.json();
 
                 if (!data.teamReponses?.responses[0] && isMounted) {
-                    console.log("Q11 not completed. Redirecting...");
+                    
                     navigate("/q11", { replace: true });
                 }
             } catch (error) {
@@ -91,16 +91,19 @@ const Q13 = () => {
         }
 
         try {
-            console.log("Submitting:", { team_name: teamName, question_id: "q13", submission_time: new Date().toISOString(), answer });
+            
 
-            const response = await axios.post("http://192.168.23.5:5000/quiz/submit-answer", {
-                team_name: teamName,
-                question_id: "q13",
-                submission_time: new Date().toISOString(),
-                answer,
-            });
+            const now = new Date();
+const submissionTime = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}:${String(now.getSeconds()).padStart(2, "0")}`;
 
-            console.log("Response:", response.data);
+const response = await axios.post("http://192.168.23.5:5000/quiz/submit-answer", {
+    team_name: teamName,
+    question_id: "q13",
+    submission_time: submissionTime,  // ✅ Now in "HH:MM:SS" format
+    answer,
+});
+
+            
 
             if (response.data.success) {
                 toast.success("Successfully submitted! Redirecting...");
@@ -110,7 +113,7 @@ const Q13 = () => {
             }
         } catch (err) {
             console.error("Error submitting answer:", err);
-            toast.error("Something went wrong. Please try again.");
+            toast.error("Wrong answer. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -126,13 +129,17 @@ const Q13 = () => {
                     <div id="question">
                         <h2>Problem 3</h2>
                         <p>
-                            Find the trajectory path and inform Iron Man. We are at the end of the fight 
-                            in New York City. A missile has been released to destroy the city, and Iron Man 
-                            must divert it into the portal. However, a building is directly in front of him.
-                            He must pass through a certain point to avoid or just touch one point of the building.
-                            (Iron Man is following an exponential path; find the correct function for the trajectory.)
+                        Mission Update: Final Stand in New York City!
+Heroes, we are at the climax of the battle in New York City. A deadly missile has been launched, and its target is set to destroy the city! Our only hope is Iron Man, who must intercept the missile and divert it into the open portal above before it’s too late.
+However, there’s a critical problem! While redirecting the missile, Iron Man is on a collision course with a towering building directly in front of him. To complete his mission successfully, he must adjust his trajectory in such a way that he
+Just grazes a single point on the building at (24,159432) without crashing into it 
+Iron Man's flight path follows an exponential trajectory, meaning its mathematical representation follows the form of a function like 
+2^x or e^x
+Your challenge is to analyze the situation, calculate the correct exponential function, and determine the precise path he must take to save New York City!
+Use your mathematical and analytical skills to find the right function and inform Iron Man before time runs out! 🚀🔥
+Are you ready to take on this high-stakes mission? The fate of the city is in your hands!
                         </p>
-                        <h3>Data: <a href="#">click here</a></h3>
+                        <h3>Data: <a href="/data13.csv" download="data13.csv">click here</a></h3>
                     </div>
                     <form onSubmit={handleSubmit}>
                         <input 

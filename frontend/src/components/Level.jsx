@@ -24,7 +24,7 @@ function Level() {
       const response = await axios.get("http://192.168.23.5:5000/users/session", {
         withCredentials: true,
       });
-      console.log("Session Active:", response.data);
+
       setTeamName(response.data.teamname);
     } catch (error) {
       console.error("Session Check Failed:", error.response?.data || error);

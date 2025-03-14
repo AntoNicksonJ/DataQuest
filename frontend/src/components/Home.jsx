@@ -27,7 +27,7 @@ function Home() {
                 password,
             });
     
-            console.log("✅ Registration Successful:", response.data);
+            
             navigate("/login"); // Navigate to login page after successful registration
         } catch (err) {
             console.error("❌ Registration Error:", err.response?.data?.error || err.message);

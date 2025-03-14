@@ -39,7 +39,7 @@ const Q12 = () => {
                 const { active_round } = roundResponse.data;
 
                 if (!active_round && isMounted) {
-                    console.log("Round inactive. Redirecting...");
+                    
                     navigate("/level", { replace: true });
                     return;
                 }
@@ -51,7 +51,7 @@ const Q12 = () => {
                 const data = await response.json();
 
                 if (!data.teamReponses?.responses[0] && isMounted) {
-                    console.log("Q11 not completed. Redirecting...");
+
                     navigate("/q11", { replace: true });
                 }
             } catch (error) {
@@ -87,12 +87,15 @@ const Q12 = () => {
         }
 
         try {
-            const response = await axios.post("http://192.168.23.5:5000/quiz/submit-answer", {
-                team_name: teamName,
-                question_id: "q12",
-                submission_time: new Date().toISOString(),
-                answer,
-            });
+            const now = new Date();
+const submissionTime = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}:${String(now.getSeconds()).padStart(2, "0")}`;
+
+const response = await axios.post("http://192.168.23.5:5000/quiz/submit-answer", {
+    team_name: teamName,
+    question_id: "q12",
+    submission_time: submissionTime,  // ✅ Now in "HH:MM:SS" format
+    answer,
+});
 
             if (response.data.success) {
                 navigate("/q13");
@@ -101,7 +104,7 @@ const Q12 = () => {
             }
         } catch (err) {
             console.error("Error submitting answer:", err);
-            setError("Something went wrong. Please try again.");
+            setError("Wrong answer. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -116,11 +119,13 @@ const Q12 = () => {
                     <div id="question">
                         <h2>Problem 2</h2>
                         <p>
-                            Great work buddies! Let's move to help others. Our Green monster (Hulk) and Thor
-                            are in the middle of an enemy army, approaching them from both sides.
-                            Hulk decided to attack the side with maximum power. Which side should he attack?
+                        Your skills have helped us uncover valuable information, but the battle isn’t over yet! We must now assist our mighty allies, the Green Monster (Hulk) and Thor, who are trapped in the middle of an advancing enemy army. The enemies are approaching from **both the left and right sides, preparing for a fierce battle.
+Hulk, known for his raw strength and unstoppable rage, is ready to smash his way through the enemy ranks. However, he must make a strategic decision—which side should he attack? To maximize his impact, Hulk decides to charge toward the side with the greatest enemy power and neutralize the strongest threat first.
+Your challenge is to analyze the given data, determine the power levels of the enemy forces on each side, and help Hulk choose the most critical target.
+Use your analytical skills, compare the data effectively, and guide Hulk toward the most dangerous side! The fate of this battle depends on your decision.
+if its above them it is  left if its below them it is right.
                         </p>
-                        <h3>Data: <a href="#">click here</a></h3>
+                        <h3>Data: <a href="/data12.csv" download="data.csv">click here</a></h3>
                     </div>
                     <form onSubmit={handleSubmit}>
                         <input 

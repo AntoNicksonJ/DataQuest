@@ -71,15 +71,15 @@ const Q23 = () => {
     }
 
     try {
-      const response = await axios.post(
-        "http://192.168.23.5:5000/quiz/submit-answer",
-        {
-          team_name: teamName,
-          question_id: "q23",
-          submission_time: new Date().toISOString(),
-          answer,
-        }
-      );
+      const now = new Date();
+const submissionTime = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}:${String(now.getSeconds()).padStart(2, "0")}`;
+
+const response = await axios.post("http://192.168.23.5:5000/quiz/submit-answer", {
+    team_name: teamName,
+    question_id: "q23",
+    submission_time: submissionTime,  // ✅ Now in "HH:MM:SS" format
+    answer,
+});
 
       if (response.data.success) {
         toast.success("Successfully submitted! Redirecting...");
@@ -89,7 +89,7 @@ const Q23 = () => {
       }
     } catch (err) {
       console.error("Error submitting answer:", err);
-      setError("Something went wrong. Please try again.");
+      setError("Wrong answer. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -109,7 +109,7 @@ const Q23 = () => {
         const { active_round } = roundResponse.data;
 
         if (!active_round && isMounted) {
-          console.log("Round inactive. Redirecting...");
+
           navigate("/level", { replace: true });
           return;
         }
@@ -155,16 +155,16 @@ const Q23 = () => {
           <div id="question">
             <h2>Problem 3</h2>
             <p>
-              Avengers are fighting in teams against Thanos in various
-              locations. On Titan, Iron Man and his team are fighting, while on
-              Earth, Captain America is leading a team with Black Panther. The
-              given dataset contains a location column that specifies the place
-              of the fight, the heroes fighting there, and their power levels.
-              Now, find the top 3 most important persons in each location by
-              grouping the data.
+            "Avengers: The Final Stand"
+The universe is at war. Thanos and his army have launched an all-out assault across multiple battlegrounds. The Avengers, Earth's mightiest heroes, are fighting in teams at different locations to stop him.
+A strategic report containing battle data has been intercepted. The location column in the dataset specifies where each battle is happening. It also lists the heroes fighting there and their respective power levels.
+Your mission:
+Group the data by location and analyze the power levels.
+Identify the most crucial heroes at each location, the ones who are making the biggest impact in the fight.
+The fate of the universe rests on knowing who the key players are in each battle. Will you uncover the leaders who can turn the tide against Thanos? (answer is the heroes name)
             </p>
             <h3>
-              Data: <a href="#">click here</a>
+            <h3>Data: <a href="/data23.csv" download="data.csv">click here</a></h3>
             </h3>
           </div>
           <form onSubmit={handleSubmit}>

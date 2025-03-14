@@ -22,7 +22,6 @@ function Login() {
                 { withCredentials: true } // ✅ Allows session cookies
             );
 
-            console.log("✅ Login Successful:", response.data);
 
             const userRole = response.data.role; // Assuming backend sends role in response
 

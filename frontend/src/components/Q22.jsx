@@ -53,25 +53,17 @@ const Q22 = () => {
     }
 
     try {
-      const submissionTime = getCurrentTime();
-      console.log("Submitting:", {
-        team_name: teamName,
-        question_id: "q22",
-        submission_time: submissionTime,
-        answer,
-      });
+      const now = new Date();
+const submissionTime = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}:${String(now.getSeconds()).padStart(2, "0")}`;
 
-      const response = await axios.post(
-        "http://192.168.23.5:5000/quiz/submit-answer",
-        {
-          team_name: teamName,
-          question_id: "q22",
-          submission_time: submissionTime,
-          answer,
-        }
-      );
+const response = await axios.post("http://192.168.23.5:5000/quiz/submit-answer", {
+    team_name: teamName,
+    question_id: "q22",
+    submission_time: submissionTime,  // ✅ Now in "HH:MM:SS" format
+    answer,
+});
 
-      console.log("Response:", response.data);
+      
 
       if (response.data.success) {
         navigate("/q23"); // Navigate to next question if correct
@@ -84,7 +76,7 @@ const Q22 = () => {
         console.error("Server response:", err.response.data);
         setError(`Error: ${err.response.data.message}`);
       } else {
-        setError("Something went wrong. Please try again.");
+        setError("Wrong answer. Please try again.");
       }
     } finally {
       setLoading(false);
@@ -106,7 +98,7 @@ const Q22 = () => {
         const { active_round } = roundResponse.data;
 
         if (!active_round && isMounted) {
-          console.log("Round inactive. Redirecting...");
+          
           navigate("/level", { replace: true });
           return;
         }
@@ -118,10 +110,12 @@ const Q22 = () => {
             credentials: "include",
           }
         );
+
+        
         const data = await response.json();
 
         if (!data.teamReponses?.responses[0] && isMounted) {
-          console.log("Q11 not completed. Redirecting...");
+          
           navigate("/q11", { replace: true });
         }
       } catch (error) {
@@ -148,14 +142,15 @@ const Q22 = () => {
           <div id="question">
             <h2>Problem 2</h2>
             <p>
-              Soul stone sacrificial: you have arrived at Vormir to obtain the
-              soul stone from Red Skull. You are given a dataset containing
-              items and the priority score. You have to sacrifice the highest
-              value one, then compute a secret code using an aggregate function,
-              and decode it to tell Red Skull.
+            "The Price of the Soul Stone"
+You and your team have arrived on Vormir, standing before the spectral guardian, Red Skull. His hollow voice echoes through the dark abyss:
+"To claim the Soul Stone, one must sacrifice that which they hold most valuable."
+In your hands, you hold a dataset—an encrypted relic containing a list of precious artifacts, entities, or memories, each assigned a priority score representing its significance. The stone demands the highest price.
+Your task is to analyze the dataset and determine the most valuable entity to sacrifice. Only by offering it to the abyss will you unlock the hidden secret code, derived from an aggregate function on the remaining values. This code, when deciphered, will reveal next opponent's location of thanos.
+The fate of your mission—and perhaps the universe itself—rests on your decision. Choose wisely, sacrifice strategically, and unveil the secret that Red Skull guards..
             </p>
             <h3>
-              Data: <a href="#">click here</a>
+            <h3>Data: <a href="/data22.csv" download="data.csv">click here</a></h3>
             </h3>
           </div>
           <form onSubmit={handleSubmit}>

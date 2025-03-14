@@ -1,7 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const router = express.Router();
-const TeamResponse = require("../models/teamResponse"); // Ensure correct model import
+const TeamResponse = require("../models/TeamResponse"); // Ensure correct model import
 
 // 📌 Round-wise Leaderboard API
 router.get("/leaderboard/:roundNumber", async (req, res) => {

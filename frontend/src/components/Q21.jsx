@@ -45,7 +45,7 @@ const Q21 = () => {
         const { active_round } = roundResponse.data;
 
         if ((!active_round || active_round !== 2) && isMounted) {
-          console.log("Round inactive or incorrect round. Redirecting...");
+
           navigate("/level", { replace: true });
           return;
         }
@@ -88,25 +88,17 @@ const Q21 = () => {
     }
 
     try {
-      const submissionTime = getCurrentTime();
-      console.log("Submitting:", {
-        team_name: teamName,
-        question_id: "q21",
-        submission_time: submissionTime,
-        answer,
-      });
-
-      const response = await axios.post(
-        "http://192.168.23.5:5000/quiz/submit-answer",
-        {
+      const now = new Date();
+      const submissionTime = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}:${String(now.getSeconds()).padStart(2, "0")}`;
+      
+      const response = await axios.post("http://192.168.23.5:5000/quiz/submit-answer", {
           team_name: teamName,
           question_id: "q21",
-          submission_time: submissionTime,
-          answer, // Sending the user's answer
-        }
-      );
+          submission_time: submissionTime,  // ✅ Now in "HH:MM:SS" format
+          answer,
+      });
 
-      console.log("Response:", response.data);
+
 
       if (response.data.success) {
         navigate("/q22"); // Navigate to next question if correct
@@ -119,7 +111,7 @@ const Q21 = () => {
         console.error("Server response:", err.response.data);
         setError(`Error: ${err.response.data.message}`);
       } else {
-        setError("Something went wrong. Please try again.");
+        setError("Wrong answer. Please try again.");
       }
     } finally {
       setLoading(false);
@@ -135,14 +127,13 @@ const Q21 = () => {
           <div id="question">
             <h2>Problem 1</h2>
             <p>
-              Wakanda's alien/enemy positioning system has failed and is now
-              giving multiple columns of random positions! However, there is a
-              way to determine the positions of incoming enemies. Every column
-              contains numbers that have no factors except 1 and the number
-              itself.
+            Urgent Mission: Wakanda Under Siege!
+            Wakanda’s defense system has encountered a critical failure! The enemy positioning system has malfunctioned and is now generating randomized columns of numbers, making it nearly impossible to track the incoming enemy forces.
+            However, there is a hidden pattern within this chaotic data! Our intelligence team has discovered that each column contains a special type of number—a number that has no factors other than 1 and itself.
+            Analyse the dataset and give the index of special number in column wise order
             </p>
             <h3>
-              Data: <a href="#">click here</a>
+            <h3>Data: <a href="/data21.csv" download="data.csv">click here</a></h3>
             </h3>
           </div>
           <form onSubmit={handleSubmit}>

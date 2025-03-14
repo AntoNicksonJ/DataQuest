@@ -15,7 +15,6 @@ const AdminDashboard = () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/users/users`);
       setTeams(response.data);
-      console.log(response.data);
     } catch (error) {
       console.error("Error fetching teams:", error);
     }
@@ -67,7 +66,7 @@ const AdminDashboard = () => {
       const response = await axios.get(
         `${API_BASE_URL}/leaderboard/leaderboard/${roundNumber}`
       );
-      console.log(response.data);
+  
       setLeaderboard(response.data.leaderboard);
     } catch (error) {
       console.error("Error fetching leaderboard:", error);

@@ -4,15 +4,15 @@ const mongoose = require("mongoose");
 const router = express.Router();
 const RoundStatus = require("../models/roundStatus"); // Import round status schema
 
-// 📌 Correct Answers for Questions
+// 📌 Correct Answers for Questions (Now Supports Multiple Answers)
 const correctAnswers = {
-  q11: "captain america",
-  q12: "hulk",
-  q13: "tony stark",
-  q21: "black widow",
-  q22: "thor",
-  q23: "hawkeye",
-  q31: "loki",
+  q11: ["captain america", "steve rogers","Captain america","Captain America"],
+  q12: ["left", "left side","Left","Left side"],
+  q13: ["3^x", "3**x"],
+  q21: ["titan", "the titan","Titan","The Titan"],
+  q22: ["27,2,21,21,26,9,19,7,12,2"],
+  q23: ["thor,doctor strange,thor,doctor strange" , "thor,doctor-strange,thor,doctor-strange","Thor,Doctor Strange,Thor,Doctor Strange","Thor,Doctor-Strange,Thor,Doctor-Strange"],
+  q31: ["_"],
 };
 
 // 📌 Schema for storing team responses
@@ -38,16 +38,19 @@ const calculateTimeSpent = (startTime, submitTime) => {
   const submitSeconds = submitH * 3600 + submitM * 60 + submitS;
   const totalSeconds = submitSeconds - startSeconds;
 
+  if (totalSeconds < 0) return "0:00"; // Prevent negative values
+
   const minutes = Math.floor(totalSeconds / 60);
   const seconds = totalSeconds % 60;
 
   return `${minutes}:${String(seconds).padStart(2, "0")}`;
 };
 
-// 📌 1️⃣ API to Submit Answer (Uses RoundStatus for Start Time)
+
+// 📌 1️⃣ API to Submit Answer (Supports Multiple Correct Answers)
 router.post("/submit-answer", async (req, res) => {
   const { team_name, question_id, submission_time, answer } = req.body;
-
+  
   try {
     // 🔍 Fetch active round's start time
     const roundStatus = await RoundStatus.findOne({});
@@ -63,10 +66,12 @@ router.post("/submit-answer", async (req, res) => {
     // ⏳ Calculate time spent
     const time_spent = calculateTimeSpent(round_start_time, submission_time);
 
-    // ✅ Check if the answer is correct
+    // ✅ Check if the answer is correct (Supports Multiple Answers)
     if (
       !correctAnswers[question_id] ||
-      correctAnswers[question_id].toLowerCase() !== answer.toLowerCase()
+      !correctAnswers[question_id].some(
+        (correctAnswer) => correctAnswer.toLowerCase() === answer.toLowerCase()
+      )
     ) {
       return res
         .status(400)

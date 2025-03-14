@@ -8,7 +8,7 @@
 
 .q #grid{
     display: grid;
-    grid-template-columns: 60% 40%;
+    grid-template-columns: 100% 40%;
     grid-template-rows: 15vh auto;
 }
 
@@ -39,6 +39,7 @@
 
 .q #answer{
     height: 10vh;
+    width: 30%;
     background-color: transparent;
     outline: none;
     border:2px solid white;
@@ -50,7 +51,7 @@
 }
 
 .q #submit{
-    width: 30%;
+    width: 20%;
     height: 5vh;
     border-radius: 2vh;
     background-color: transparent;
