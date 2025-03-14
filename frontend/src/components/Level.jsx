@@ -21,7 +21,7 @@ function Level() {
 
   const fetchTeamName = async () => {
     try {
-      const response = await axios.get("http://192.168.23.5:5000/users/session", {
+      const response = await axios.get("https://dataquest-host.onrender.com/users/session", {
         withCredentials: true,
       });
 
@@ -35,7 +35,7 @@ function Level() {
 
   const fetchActiveRound = async () => {
     try {
-      const response = await axios.get("http://192.168.23.5:5000/rounds/round-status");
+      const response = await axios.get("https://dataquest-host.onrender.com/rounds/round-status");
       setActiveRound(response.data.active_round); // 🔥 Set active round
     } catch (error) {
       console.error("Error fetching active round:", error);

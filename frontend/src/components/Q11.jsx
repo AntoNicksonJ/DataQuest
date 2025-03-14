@@ -16,7 +16,7 @@ const Q11 = () => {
     const fetchTeamName = async () => {
       try {
         const response = await axios.get(
-          "http://192.168.23.5:5000/users/session"
+          "https://dataquest-host.onrender.com/users/session"
         );
         setTeamName(response.data.teamname);
       } catch (err) {
@@ -33,7 +33,7 @@ const Q11 = () => {
     const checkRoundStatus = async () => {
       try {
         const response = await axios.get(
-          "http://192.168.23.5:5000/rounds/round-status"
+          "https://dataquest-host.onrender.com/rounds/round-status"
         );
         const { active_round } = response.data;
 
@@ -78,7 +78,7 @@ const Q11 = () => {
       ).padStart(2, "0")}`;
 
       const response = await axios.post(
-        "http://192.168.23.5:5000/quiz/submit-answer",
+        "https://dataquest-host.onrender.com/quiz/submit-answer",
         {
           team_name: teamName,
           question_id: "q11",

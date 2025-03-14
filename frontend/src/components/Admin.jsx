@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import "../assets/style/admin.css";
 
-const API_BASE_URL = "http://192.168.23.5:5000"; // Adjust according to your backend
+const API_BASE_URL = "https://dataquest-host.onrender.com"; // Adjust according to your backend
 
 const AdminDashboard = () => {
   const [teams, setTeams] = useState([]);

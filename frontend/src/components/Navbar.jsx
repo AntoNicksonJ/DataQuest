@@ -16,7 +16,7 @@ function Navbar() {
 
   const fetchTeamName = async () => {
     try {
-      const response = await axios.get("http://192.168.23.5:5000/users/session", {
+      const response = await axios.get("https://dataquest-host.onrender.com/users/session", {
         withCredentials: true,
       }); // ✅ Axios GET request
     
@@ -39,7 +39,7 @@ function Navbar() {
     try {
 
 
-      const response = await axios.post("http://192.168.23.5:5000/users/logout"); // Axios POST request
+      const response = await axios.post("https://dataquest-host.onrender.com/users/logout"); // Axios POST request
 
 
       if (response.data.success) {

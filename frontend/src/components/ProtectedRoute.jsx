@@ -7,7 +7,7 @@ export default function ProtectedRoute({isAuth}){
 
     useEffect(() => {
         async function authenticate(){
-            const response = await fetch("http://192.168.23.5:5000/users/session/", {
+            const response = await fetch("https://dataquest-host.onrender.com/users/session/", {
                 credentials: 'include'
             });
             const data = await response.json();

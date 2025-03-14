@@ -18,7 +18,7 @@ const Q23 = () => {
     const fetchTeamName = async () => {
       try {
         const response = await axios.get(
-          "http://192.168.23.5:5000/users/session"
+          "https://dataquest-host.onrender.com/users/session"
         );
         setTeamName(response.data.teamname);
       } catch (err) {
@@ -35,7 +35,7 @@ const Q23 = () => {
     const checkRoundStatus = async () => {
       try {
         const response = await axios.get(
-          "http://192.168.23.5:5000/rounds/round-status"
+          "https://dataquest-host.onrender.com/rounds/round-status"
         );
         const { active_round } = response.data;
 
@@ -74,7 +74,7 @@ const Q23 = () => {
       const now = new Date();
 const submissionTime = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}:${String(now.getSeconds()).padStart(2, "0")}`;
 
-const response = await axios.post("http://192.168.23.5:5000/quiz/submit-answer", {
+const response = await axios.post("https://dataquest-host.onrender.com/quiz/submit-answer", {
     team_name: teamName,
     question_id: "q23",
     submission_time: submissionTime,  // ✅ Now in "HH:MM:SS" format
@@ -104,7 +104,7 @@ const response = await axios.post("http://192.168.23.5:5000/quiz/submit-answer",
       try {
         // Fetch round status
         const roundResponse = await axios.get(
-          "http://192.168.23.5:5000/rounds/round-status"
+          "https://dataquest-host.onrender.com/rounds/round-status"
         );
         const { active_round } = roundResponse.data;
 
@@ -116,7 +116,7 @@ const response = await axios.post("http://192.168.23.5:5000/quiz/submit-answer",
 
         // Fetch team responses
         const response = await fetch(
-          "http://192.168.23.5:5000/rounds/team-response",
+          "https://dataquest-host.onrender.com/rounds/team-response",
           {
             credentials: "include",
           }
