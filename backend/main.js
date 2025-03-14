@@ -15,7 +15,7 @@ const PORT = process.env.PORT || 5000;
 
 // ✅ CORS Middleware (Ensures Cookies are sent)
 app.use(cors({
-  origin: "https://67d3b0cfb7cb4f076a79a00f--hilarious-lokum-960004.netlify.app/",
+  origin: "https://67d3b0cfb7cb4f076a79a00f--hilarious-lokum-960004.netlify.app",
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true 
 }));
